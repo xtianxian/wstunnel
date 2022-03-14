@@ -4,7 +4,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-
+	"crypto/tls"
 	log "github.com/fangdingjun/go-log/v5"
 )
 
@@ -43,6 +43,7 @@ func (srv *tcpServer) serve(c net.Conn) {
 	}()
 
 	if u.Scheme == "ws" || u.Scheme == "wss" {
+		dialer.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		conn1, resp, err := dialer.Dial(srv.remote, nil)
 		if err != nil {
 			log.Errorln(err)

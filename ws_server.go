@@ -70,6 +70,7 @@ func (wss *wsServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	u, _ := url.Parse(remote)
 
 	if u.Scheme == "ws" || u.Scheme == "wss" {
+		dialer.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		conn1, resp, err := dialer.Dial(remote, nil)
 		if err != nil {
 			log.Errorln(err)

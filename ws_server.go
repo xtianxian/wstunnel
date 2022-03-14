@@ -33,7 +33,6 @@ func (wss *wsServer) run() {
 }
 
 func (wss *wsServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	p := r.URL.Path
 	remote := ""
 	for _, ru := range wss.rule {

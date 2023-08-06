@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var cfg conf
+	var cfg Conf
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
 		log.Fatal(err)
 	}

@@ -12,6 +12,7 @@ import (
 type tcpServer struct {
 	addr   string
 	remote string
+	payload string
 }
 
 func (srv *tcpServer) run() {
@@ -28,11 +29,11 @@ func (srv *tcpServer) run() {
 			log.Error(err)
 			return
 		}
-		go srv.serve(conn)
+		go srv.serve(conn, srv.payload)
 	}
 }
 
-func (srv *tcpServer) serve(c net.Conn) {
+func (srv *tcpServer) serve(c net.Conn, payload string) {
 	defer c.Close()
 
 	u, _ := url.Parse(srv.remote)

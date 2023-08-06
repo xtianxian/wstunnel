@@ -1,10 +1,10 @@
 package wstunnel
 
-type proxyItem struct {
+type ProxyItem struct {
 	Listen string `yaml:"listen"`
 	Remote string `yaml:"remote"`
 }
 
-type conf struct {
-	ProxyConfig []proxyItem `yaml:"proxy_config"`
+type Conf struct {
+	ProxyConfig []ProxyItem `yaml:"proxy_config"`
 }

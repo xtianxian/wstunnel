@@ -117,7 +117,7 @@ func forwardTCP2TCP(c1, c2 net.Conn) {
 	<-ch
 }
 
-func MakeServers(cfg conf, payload string) {
+func MakeServers(cfg Conf, payload string) {
 	var wsservers = []wsServer{}
 	var tcpservers = []tcpServer{}
 

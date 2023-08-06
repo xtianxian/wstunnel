@@ -1,4 +1,4 @@
-package main
+package wstunnel
 
 type proxyItem struct {
 	Listen string `yaml:"listen"`

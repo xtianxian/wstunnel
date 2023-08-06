@@ -1,4 +1,4 @@
-module github.com/fangdingjun/wstunnel
+module github.com/xtianxian/wstunnel
 
 go 1.13
 

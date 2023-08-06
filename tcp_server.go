@@ -1,10 +1,11 @@
-package main
+package wstunnel
 
 import (
+	"crypto/tls"
 	"net"
 	"net/http"
 	"net/url"
-	"crypto/tls"
+
 	log "github.com/fangdingjun/go-log/v5"
 )
 
@@ -32,52 +33,52 @@ func (srv *tcpServer) run() {
 }
 
 func (srv *tcpServer) serve(c net.Conn) {
-        defer c.Close()
+	defer c.Close()
 
-        u, _ := url.Parse(srv.remote)
+	u, _ := url.Parse(srv.remote)
 
-        log.Debugf("connected from %s, forward to %s", c.RemoteAddr(), srv.remote)
+	log.Debugf("connected from %s, forward to %s", c.RemoteAddr(), srv.remote)
 
-        defer func() {
-                log.Debugf("from %s, finished", c.RemoteAddr())
-        }()
+	defer func() {
+		log.Debugf("from %s, finished", c.RemoteAddr())
+	}()
 
-        if u.Scheme == "ws" || u.Scheme == "wss" {
-                dialer.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-                header := make(http.Header)
-                header.Add("Host", payload)
-                header.Add("X-Online-Host", payload)
-                header.Add("X-Forward-Host", payload)
-                header.Add("Referer", "https://" + payload)
-                header.Add("Origin", "https://" + payload)
-                header.Add("User-Agent", "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36")
-                conn1, resp, err := dialer.Dial(srv.remote, header)
-                if err != nil {
-                        log.Errorln(err)
-                        return
-                }
-                resp.Body.Close()
-                if resp.StatusCode != http.StatusSwitchingProtocols {
-                        log.Errorf("dial remote ws %d", resp.StatusCode)
-                        return
-                }
-                defer conn1.Close()
+	if u.Scheme == "ws" || u.Scheme == "wss" {
+		dialer.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		header := make(http.Header)
+		header.Add("Host", payload)
+		header.Add("X-Online-Host", payload)
+		header.Add("X-Forward-Host", payload)
+		header.Add("Referer", "https://"+payload)
+		header.Add("Origin", "https://"+payload)
+		header.Add("User-Agent", "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36")
+		conn1, resp, err := dialer.Dial(srv.remote, header)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+		resp.Body.Close()
+		if resp.StatusCode != http.StatusSwitchingProtocols {
+			log.Errorf("dial remote ws %d", resp.StatusCode)
+			return
+		}
+		defer conn1.Close()
 
-                forwardWS2TCP(conn1, c)
-                return
-        }
+		forwardWS2TCP(conn1, c)
+		return
+	}
 
-        if u.Scheme == "tcp" {
-                conn1, err := net.Dial("tcp", u.Host)
-                if err != nil {
-                        log.Errorln(err)
-                        return
-                }
-                defer conn1.Close()
+	if u.Scheme == "tcp" {
+		conn1, err := net.Dial("tcp", u.Host)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+		defer conn1.Close()
 
-                forwardTCP2TCP(c, conn1)
-                return
-        }
+		forwardTCP2TCP(c, conn1)
+		return
+	}
 
-        log.Errorf("unsupported scheme %s", u.Scheme)
+	log.Errorf("unsupported scheme %s", u.Scheme)
 }

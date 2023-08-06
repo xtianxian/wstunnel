@@ -117,7 +117,7 @@ func forwardTCP2TCP(c1, c2 net.Conn) {
 	<-ch
 }
 
-func makeServers(cfg conf) {
+func MakeServers(cfg conf, payload string) {
 	var wsservers = []wsServer{}
 	var tcpservers = []tcpServer{}
 
@@ -141,7 +141,7 @@ func makeServers(cfg conf) {
 				wsservers = append(wsservers, wsServer{u.Host, []forwardRule{{u.Path, c.Remote}}})
 			}
 		case "tcp":
-			tcpservers = append(tcpservers, tcpServer{u.Host, c.Remote})
+			tcpservers = append(tcpservers, tcpServer{u.Host, c.Remote, payload})
 		default:
 			log.Fatalf("unsupported scheme %s", u.Scheme)
 		}

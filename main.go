@@ -2,7 +2,6 @@ package wstunnel
 
 import (
 	"flag"
-	"io/ioutil"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,19 +10,18 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var payload string
-
 func main() {
 	var cfgfile string
 	var logfile string
 	var loglevel string
+	var payload string
 	flag.StringVar(&cfgfile, "c", "config.yaml", "config file")
 	flag.StringVar(&logfile, "log_file", "", "log file")
 	flag.StringVar(&loglevel, "log_level", "INFO", "log level")
 	flag.StringVar(&payload, "payload", "free.facebook.com", "payload")
 	flag.Parse()
 
-	data, err := ioutil.ReadFile(cfgfile)
+	data, err := os.ReadFile(cfgfile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,7 +43,7 @@ func main() {
 		log.Default.Level = lv
 	}
 
-	makeServers(cfg)
+	MakeServers(cfg, payload)
 
 	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)

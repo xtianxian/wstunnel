@@ -10,13 +10,20 @@ import (
 )
 
 type tcpServer struct {
-	addr   string
-	remote string
+	addr    string
+	remote  string
 	payload string
 }
 
+var l net.Listener
+
+func StopWSTunnel() {
+	l.Close()
+}
+
 func (srv *tcpServer) run() {
-	l, err := net.Listen("tcp", srv.addr)
+	var err error
+	l, err = net.Listen("tcp", srv.addr)
 	if err != nil {
 		log.Errorln(err)
 		return

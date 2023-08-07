@@ -17,8 +17,8 @@ type tcpServer struct {
 
 var l net.Listener
 
-func StopWSTunnel() {
-	l.Close()
+func StopWSTunnel() error {
+	return l.Close()
 }
 
 func (srv *tcpServer) run() {
@@ -45,10 +45,10 @@ func (srv *tcpServer) serve(c net.Conn, payload string) {
 
 	u, _ := url.Parse(srv.remote)
 
-	log.Debugf("connected from %s, forward to %s", c.RemoteAddr(), srv.remote)
+	log.Printf("connected from %s, forward to %s", c.RemoteAddr(), srv.remote)
 
 	defer func() {
-		log.Debugf("from %s, finished", c.RemoteAddr())
+		log.Printf("from %s, finished", c.RemoteAddr())
 	}()
 
 	if u.Scheme == "ws" || u.Scheme == "wss" {

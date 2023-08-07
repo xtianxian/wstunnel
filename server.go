@@ -1,6 +1,7 @@
 package wstunnel
 
 import (
+	"errors"
 	"io"
 	"net"
 	"net/url"
@@ -51,7 +52,7 @@ func forwardWS2TCP(conn1 *websocket.Conn, conn2 net.Conn) {
 	ch := make(chan struct{}, 2)
 
 	defer func() {
-		log.Debugf("forward to %s finished", conn2.RemoteAddr())
+		log.Printf("forward to %s finished", conn2.RemoteAddr())
 	}()
 
 	go func() {
@@ -117,14 +118,14 @@ func forwardTCP2TCP(c1, c2 net.Conn) {
 	<-ch
 }
 
-func MakeServers(cfg Conf, payload string) {
+func MakeServers(cfg Conf, payload string) error {
 	var wsservers = []wsServer{}
 	var tcpservers = []tcpServer{}
 
 	for _, c := range cfg.ProxyConfig {
 		u, err := url.Parse(c.Listen)
 		if err != nil {
-			log.Fatalf("parse %s, error %s", c.Listen, err)
+			return err
 		}
 
 		switch u.Scheme {
@@ -143,7 +144,8 @@ func MakeServers(cfg Conf, payload string) {
 		case "tcp":
 			tcpservers = append(tcpservers, tcpServer{u.Host, c.Remote, payload})
 		default:
-			log.Fatalf("unsupported scheme %s", u.Scheme)
+			return errors.New("unsupported scheme " + u.Scheme)
+
 		}
 	}
 
@@ -154,4 +156,5 @@ func MakeServers(cfg Conf, payload string) {
 	for _, srv := range tcpservers {
 		go srv.run()
 	}
+	return nil
 }

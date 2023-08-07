@@ -53,10 +53,10 @@ func (wss *wsServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ip = _ip
 	}
 
-	log.Debugf("from %s, request %s, forward to %s", ip, p, remote)
+	log.Printf("from %s, request %s, forward to %s", ip, p, remote)
 
 	defer func() {
-		log.Debugf("from %s, request finished", ip)
+		log.Printf("from %s, request finished", ip)
 	}()
 
 	conn, err := upgrader.Upgrade(w, r, nil)
